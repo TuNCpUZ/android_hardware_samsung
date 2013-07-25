@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2012 The Android Open Source Project
+# Copyright (C) 2013 The Android Open-Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,23 @@
 # limitations under the License.
 #
 
-ifeq ($(TARGET_BOARD_PLATFORM),exynos4)
-ril_dirs := libsecril-client libsecril-client-sap
-include $(call all-named-subdir-makefiles,$(ril_dirs))
+RIL_PATH := $(call my-dir)
+
+ifeq ($(BOARD_VENDOR),samsung)
+
+# libril
+ifeq ($(BOARD_PROVIDES_LIBRIL),true)
+ifeq ($(BOARD_MODEM_TYPE),xmm6260)
+include $(RIL_PATH)/xmm6260/libril/Android.mk
 endif
+ifeq ($(BOARD_MODEM_TYPE),xmm6262)
+include $(RIL_PATH)/xmm6262/libril/Android.mk
+endif
+endif
+
+# ril client
+SECRIL_CLIENT_DIRS := libsecril-client libsecril-client-sap
+include $(foreach client_dirs,$(SECRIL_CLIENT_DIRS),$(RIL_PATH)/$(client_dirs)/Android.mk)
+
+endif
+
